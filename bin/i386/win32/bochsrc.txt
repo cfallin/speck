@@ -1,0 +1,33 @@
+romimage: file="c:/program files/bochs/BIOS-bochs-latest", address=0xf0000
+
+megs: 8
+
+vgaromimage: "c:/program files/bochs/VGABIOS-elpin-2.40"
+
+floppya: 1_44=../floppy.img, status=inserted
+
+newharddrivesupport: enabled=1
+
+boot: a
+
+log: bochsout.txt
+
+panic: action=report
+error: action=report
+info: action=report
+debug: action=ignore
+
+vga_update_interval: 300000
+
+keyboard_serial_delay: 250
+
+floppy_command_delay: 500
+
+ips: 1000000
+
+mouse: enabled=0
+
+private_colormap: enabled=0
+
+fullscreen: enabled=0
+screenmode: name="sample"

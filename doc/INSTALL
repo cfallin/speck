@@ -1,0 +1,159 @@
+Build/Install instructions
+==========================
+
+Currently, speck doesn't do much of anything useful (or at all). If you still
+want to install, read on. The only functional port right now is i386, so these
+instructions will assume that target architecture. I have done/do development
+under Linux (currently), FreeBSD (at one time) and Win2K/XP (using cygwin), so the
+Makefile system will accomodate all of these environments, as well as pretty
+much any other Unix-like system with the necessary tools.
+
+Obtaining
+=========
+
+The speck source is contained in a Subversion (http://subversion.tigris.org)
+repository (Subversion is like CVS, but better). The repository is on my server
+at http://svn.cfallin.org:8000/svn/speck . Withing the repository, /speck is
+the current source, and /rel/0.0.1, /rel/0.0.2, etc. are the releases. This
+repository is the one and only official speck. To obtain:
+
+	prompt$ svn co http://svn.cfallin.org:8000/svn/speck/speck [--username=bob]
+
+Only specify an username if I have given you one - If you want to help out,
+and you've submitted a few patches already, email me and I might give you one
+with write access.
+
+Compiling
+=========
+
+Speck is built with the GNU toolchain (i386-elf target). It also uses the nasm
+assembler (http://nasm.2y.net, v0.98 or later) for some assembly code. You'll
+need mtools too if you want the GRUB floppy image updated automatically on each
+build.
+
+The actual compilation is simple. First, make sure that make.inc is correct -
+make sure that "arch" is set to i386 and that "prefix" and "postfix" are
+correct for your toolchain. If you're using a cross-compiler, they will NOT be
+blank (try "i386-elf-" for prefix if unsure). Don't change settings in make.inc
+directly - instead create a file called "config" at the root of the tree with
+one variable set per line, like "prefix=i386-elf-" for example.
+
+Once the configuration correct, just typing
+
+	prompt$ make
+
+should be sufficient.
+
+Installing
+==========
+
+A floppy image suitable for booting should be in "bin/i386/floppy.img". Write
+this image _directly_ to a floppy (sector-by-sector), DON'T just copy it to a
+FAT12-formatted disk. Alternatively, if you're already using GRUB, you can just
+boot the kernel and module images directly. in the "bin/i386" directory, the 
+kernel is (surprise) "kernel" and the modules will be the files listed in the 
+Makefile as "BINARIES=kernel module1 module2 ...".
+
+Running under the Bochs PC emulator
+===================================
+
+Bochs is a fairly accurate PC emulator capable of simulating a UP or SMP x86
+machine, as well as IDE, floppy, serial and parallel ports, SoundBlaster,
+NE2000 ethernet, VGA (text/graphics), and the list goes on. It's an awesome
+piece of software - check it out at http://bochs.sourceforge.net/ .
+
+My Makefile system has some provisions for running speck under bochs in win32
+(cygwin environment). Make sure that you put bochs in C:\Program Files\bochs
+(I had to hardcode paths; I couldn't do it any other way). Then run
+"make winbochs" at the top of the tree. If you have a bochs binary with the
+run-time configuration interface, press enter 3 times to accept the defaults.
+speck should then proceed to boot from the bin/i386/floppy.img image.
+
+To use bochs inside a Unix environment (tested under Linux), add/modify these
+lines in your .bochsrc (in your home directory):
+
+	floppya: 1_44=/path/to/speck/bin/i386/floppy.img, status=inserted
+	boot: a
+
+Then just run "bochs" at a shell prompt.
+
+Note that under Linux (Debian, both woody and sid) Bochs doesn't send timer
+interrupts for some reason. This single bug has caused me to use VMWare under
+Linux instead. This bug in bochs does not appear under WinXP/2K.
+
+My setup
+========
+
+Here I will present my development setup, just in case you want to know. On
+all platforms, my "IDE" consists of an open console and a few instances of
+GVim (http://www.vim.org/). Who needs Emacs when you have Vim? :-)
+
+FreeBSD
+-------
+I migrated (June 2, 2002) (I have since gone back to Linux) my main workstation 
+over to FreeBSD. The setup is identical to Linux, with the exception that I use
+'gmake' (GNU make) instead of the native BSD make to build speck. Note that 
+bochs, nasm, and mtools can all be compiled from the ports tree (or installed as
+binary packages).
+
+Linux
+-----
+
+I do most of my development on my Linux workstation (sol). I have set up Apache 2 
+(port 8000) and the Subversion server plugin on my Linux server (cfallin.org),
+and installed an SVN client on sol. Previously I accessed my repository on the
+local filesystem without going through the Apache server module.
+
+Extra software: Subversion (Apache plugin and client), nasm, mtools, bochs.
+Speck compiles with the standard GNU toolchain present by default on most
+distributions.
+
+Bochs, Apache 2 and Subversion were compiled from source. Nasm and mtools were
+installed as binary packages with apt-get (the Debian package manager).
+
+I copied the example .bochsrc file to my home directory, and added the lines
+shown above.
+
+I also network-boot speck to my P233-MMX test machine. I use Etherboot
+(http://etherboot.sourceforge.net/), written to a floppy. I installed tftpd
+on my box using apt-get. I then created the /tftpboot directory, making it
+writable to my normal user account, and created the directory 'speck' within
+that. I edited /etc/inetd.conf to reflect /tftpboot as the tftpd directory.
+I then compiled GRUB to support network booting. See the configure options
+for details. I copied the resulting 'nbgrub' file to /tftpboot. DHCP must also
+be set up for Etherboot to receive an IP and boot file options. On my Linux 
+server (which already had a scope set up for my LAN) I added a few options:
+boot server = 'saturn' (my server), boot file = '/tftpboot/nbgrub'. I also 
+added a custom option (code 150, string) for the GRUB menu.lst path, and set it to
+'/tftpboot/menu.lst'. I created this file and added an entry for speck
+(the GRUB path to the TFTP share is '(nd)/tftpboot'). Etherboot then was able
+to request an IP, load GRUB over the network, and boot the latest version of
+speck, downloaded straight from my development machine. This is very convenient
+as it eliminates the need to write a boot floppy with each new version, but of
+course it is not necessary to develop speck.
+
+Win2K/XP
+--------
+
+I do some of my speck development on Win2K/XP, mostly just to make sure that it's
+still possible to compile in this environment.
+
+Extra software: Cygwin, i386-elf toolchain, nasm, Subversion client, bochs,
+mtools.
+
+the i386-elf toolchain was compiled from the standard GNU source. Configure
+command lines were:
+
+	binutils: ./configure --target=i386-elf
+	gcc: ./configure --target=i386-elf --with-headers=/usr/include
+
+All of the other tools were downloaded binaries. Note that the only 'mtools'
+command needed is 'mcopy'; I had to make this symlink manually to 'mtools.exe',
+but you may not depending on what binary package you get. Bochs was set up as
+described above.
+
+In order for the netboot images to be updated on my Linux server, I added a
+Samba share (I was already running Samba; saturn hosts home directories on my
+LAN) called 'tftpboot'. I then created /tftpboot under Cygwin as a symlink to
+'//saturn/tftpboot', so my Makefiles automatically copy the image over to the
+TFTP directory.

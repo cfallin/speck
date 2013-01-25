@@ -1,0 +1,7 @@
+drive s:
+	file="floppy.img"
+	fat_bits=12
+	sectors=18
+	heads=2
+	cylinders=80
+	mformat_only

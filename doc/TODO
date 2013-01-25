@@ -1,0 +1,23 @@
+speck TODO
+==========
+
+kernel
+------
+- VFS
+- device drivers
+- signals
+- user space multitasking
+- process_fork
+- user space paging
+- user space syscalls
+
+userspace
+---------
+- uspace libsystem / libc
+- init system
+- apps!
+
+small stuff
+-----------
+- module unloading
+- selective module symbol exporting

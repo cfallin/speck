@@ -1,0 +1,5 @@
+default=0
+timeout=0
+title speck
+kernel=(fd0)/sys/kernel/kernel
+module=(fd0)/sys/kernel/testmod.o
