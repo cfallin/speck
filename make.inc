@@ -25,7 +25,7 @@ STRIP = $(PREFIX)strip$(POSTFIX)
 RANLIB = $(PREFIX)ranlib$(POSTFIX)
 
 INCLUDE = -I $(srcroot)/include
-CFLAGS = -O3 -Wall -Werror -fno-builtin $(INCLUDE)
+CFLAGS = -O3 -fno-builtin $(INCLUDE)
 ASFLAGS = $(INCLUDE)
 
 #--------------------------------------

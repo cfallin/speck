@@ -13,7 +13,7 @@ kernel: $(OBJS) ../kernel.o
 	cp kernel $(srcroot)/bin/i386/sys/kernel/kernel
 
 %.o: %.asm
-	nasm -f elf -i $(srcroot)/include/ -o $@ $^
+	nasm -f elf32 -i $(srcroot)/include/ -o $@ $^
 
 .PHONY: clean
 clean:
